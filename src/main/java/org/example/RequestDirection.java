@@ -16,7 +16,7 @@ public class RequestDirection {
     private static final String OPENROUTESERVICE_URL = "https://api.openrouteservice.org/v2/directions/driving-car";
     private static final String OPENROUTESERVICE_KEY = "5b3ce3597851110001cf6248655d4d1d3e7e4d90a06f096c4723317f";
 
-    public  static JsonObject poiSearch(double lat1, double lon1,double lat2, double lon2) {
+    public  static JsonObject poiSearch(double originLat, double originLon,double destinationLat, double destinationLon) {
         // create a json object which we will send in the post request
         // {
         //      format_in: "point",
@@ -28,12 +28,12 @@ public class RequestDirection {
                         "coordinates",
                         Json.createArrayBuilder()
                                 .add(Json.createArrayBuilder()
-                                        .add(lon1)
-                                        .add(lat1)
+                                        .add(originLon)
+                                        .add(originLat)
                                         .build())
                                 .add(Json.createArrayBuilder()
-                                        .add(lon2)
-                                        .add(lat2)
+                                        .add(destinationLon)
+                                        .add(destinationLat)
                                         .build())
                                 .build()
                 )
@@ -48,7 +48,7 @@ public class RequestDirection {
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", OPENROUTESERVICE_KEY) // send the API key for authentication
                 .post(Entity.json(request));
-        System.out.println(response);
+
         // check the result
         if (response.getStatus() != Response.Status.OK.getStatusCode()) {
             throw new RuntimeException("Failed: HTTP error code: " + response.getStatus());
@@ -59,13 +59,8 @@ public class RequestDirection {
         final JsonObject jsonObject = Json.createReader(new StringReader(responseString)).readObject();
         System.out.println("Response: " + jsonObject);
 
-        // Extract the route
-       /* final JsonNumber route = jsonObject
-                .getJsonObject("geometry")
-                .getJsonArray("coordinates")
-                .getJsonNumber(2);
-        System.out.println("Elevation: " + route.doubleValue() + "m");*/
-        return request;
+
+        return (JsonObject) response;
     }
 
 }
