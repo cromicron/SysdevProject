@@ -1,10 +1,12 @@
-package org.example;
 
+package org.example;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 
 /**
@@ -33,13 +35,20 @@ public class Main {
      * Main method.
      * @param args
      * @throws IOException
+     * @return
      */
+
+
+    public static JsonObject route =
+            RequestDirection.poiSearch(48.09967803955078,11.504903793334961, 48.15068817138672,11.580946922302246);
+
     public static void main(String[] args) throws IOException {
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with endpoints available at "
                 + "%s%nHit Ctrl-C to stop it...", BASE_URI));
         System.in.read();
         server.stop();
-    }
+
+            }
 }
 

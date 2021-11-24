@@ -16,7 +16,7 @@ public class RequestDirection {
     private static final String OPENROUTESERVICE_URL = "https://api.openrouteservice.org/v2/directions/driving-car";
     private static final String OPENROUTESERVICE_KEY = "5b3ce3597851110001cf6248655d4d1d3e7e4d90a06f096c4723317f";
 
-    public static JsonObject poiSearch(double lat1, double lon1,double lat2, double lon2) {
+    public  static JsonObject poiSearch(double lat1, double lon1,double lat2, double lon2) {
         // create a json object which we will send in the post request
         // {
         //      format_in: "point",
@@ -68,8 +68,5 @@ public class RequestDirection {
         return request;
     }
 
-    public static void main(String[] args) {
-        System.out.println(poiSearch(48.1499, 11.5942,50.1499, 11.5942));
-    }
 }
 
