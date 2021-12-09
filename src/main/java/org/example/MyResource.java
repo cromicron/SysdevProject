@@ -1,14 +1,13 @@
 package org.example;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.json.JsonObject;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 /**
  * Root resource (exposed at "myresource" path)
  */
-@Path("myresource")
+@Path("/orsdirections")
 public class MyResource {
 
     /**
@@ -18,8 +17,19 @@ public class MyResource {
      * @return String that will be returned as a text/plain response.
      */
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
+
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject getIt(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
+                            @QueryParam("destinationLat") double destinationLat, @QueryParam("destinationLon") double
+                        destinationLong) {
+        JsonObject route = RequestDirection.poiSearch(originLat, originLong, destinationLat, destinationLong);
+
+        System.out.println("test"+route);
+        return route;
     }
+
+
+
+
+
 }
