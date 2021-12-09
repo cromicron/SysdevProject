@@ -48,7 +48,7 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        Graph network = new Graph();
+        //Graph network = new Graph();
 
         //testing using Json class
 
@@ -63,9 +63,9 @@ public class Main {
             String type = geo.getType();
             if (type.contentEquals("LineString")){
                 ArrayList route = geo.getCoordinates();
-                network.connectNodes(route);
+                edgeList.add(route);
 
-                            }
+            }
 
 
         }
