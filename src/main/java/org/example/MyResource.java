@@ -19,10 +19,10 @@ public class MyResource {
     @GET
 
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject getIt(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
+    public String getIt(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
                             @QueryParam("destinationLat") double destinationLat, @QueryParam("destinationLon") double
                         destinationLong) {
-        JsonObject route = RequestDirection.poiSearch(originLat, originLong, destinationLat, destinationLong);
+        String route = RequestDirection.poiSearch(originLat, originLong, destinationLat, destinationLong);
 
         System.out.println("test"+route);
         return route;
