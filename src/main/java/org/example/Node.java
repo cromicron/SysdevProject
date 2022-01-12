@@ -13,6 +13,6 @@ public class Node {
     }
 
     public String toString(){
-        return "("+Double.toString(lat)+", "+Double.toString(lang)+")";
+        return "("+Double.toString(lat)+","+Double.toString(lang)+")";
     }
 }
