@@ -1,11 +1,17 @@
 
 package org.example;
-import com.fasterxml.jackson.databind.JsonNode;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -41,30 +47,13 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        Graph network = new Graph();
+        String file = "src/main/java/org/example/schleswig-holstein.json";
+        JsonReader jsonReader = Json.createReader(new FileInputStream(file));
+        JsonObject sh = jsonReader.readObject();
+        Graph shGraph = new Graph(sh);
+        ArrayList<Node> arrLst = new ArrayList<Node>();
 
-        //testing using Json class
-
-        JsonPoJo sh = Json.fromFile("src/test/java/org/example/schleswig-holstein.json",JsonPoJo.class);
-        JsonNode[] features =sh.getFeatures();
-
-        ArrayList edgeList = new ArrayList();
-        for (int i = 0; i < 10; i++) {
-            JsonNode sh1 =  features[i];
-            JsonPoJo sh2 = Json.fromJson(sh1, JsonPoJo.class);
-            JsonPoJo geo = sh2.getGeometry();
-            String type = geo.getType();
-            if (type.contentEquals("LineString")){
-                ArrayList route = geo.getCoordinates();
-                edgeList.add(route);
-                network.connectNodes(route);
-
-            }
-
-
-        }
-
-
+        System.out.println(shGraph.coordMap.get("9.8385465,54.4798868").outnodes);
 
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with endpoints available at "

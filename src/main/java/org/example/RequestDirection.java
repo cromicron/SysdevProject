@@ -1,6 +1,7 @@
 package org.example;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.client.Entity;
@@ -57,10 +58,12 @@ public class RequestDirection {
         // get the JSON response
         final String responseString = response.readEntity(String.class);
         final JsonObject jsonObject = Json.createReader(new StringReader(responseString)).readObject();
+
         System.out.println("Response: " + jsonObject);
 
 
         return  responseString;
+
     }
 
 }
