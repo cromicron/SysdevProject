@@ -1,20 +1,13 @@
 
 package org.example;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonObject;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Main class.
@@ -32,7 +25,7 @@ public class Main {
         // create a resource config that scans for JAX-RS resources and providers
         // in org.example package
         final ResourceConfig rc = new ResourceConfig().packages("org.example");
-
+        rc.register(new CORSFilter());
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
@@ -48,7 +41,7 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
-        //Graph network = new Graph();
+        Graph network = new Graph();
 
         //testing using Json class
 
@@ -64,6 +57,7 @@ public class Main {
             if (type.contentEquals("LineString")){
                 ArrayList route = geo.getCoordinates();
                 edgeList.add(route);
+                network.connectNodes(route);
 
             }
 
