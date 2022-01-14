@@ -34,11 +34,7 @@ public class RequestDirection {
     }
 
     public  static String postRoute(double originLat, double originLon,double destinationLat, double destinationLon) {
-        // create a json object which we will send in the post request
-        // {
-        //      format_in: "point",
-        //      geometry: [lon, lat]
-        // }
+
         final JsonObject request = Json.createObjectBuilder()
                 //.add("format_in", "point")
                 .add(
@@ -72,9 +68,9 @@ public class RequestDirection {
 
         // get the JSON response
         final String responseString = response.readEntity(String.class);
-        final JsonObject jsonObject = Json.createReader(new StringReader(responseString)).readObject();
 
-        System.out.println("Response: " + jsonObject);
+
+        System.out.println("Response: " + responseString);
 
 
         return  responseString;

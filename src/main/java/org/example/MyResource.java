@@ -1,6 +1,9 @@
 package org.example;
 
+import jakarta.json.Json;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -10,19 +13,31 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/orsdirections")
 public class MyResource {
 
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String post(JsonObject postRequest) {
+        JsonNumber originLatJson = (JsonNumber) postRequest.get("originLat");
+        JsonNumber originLongJson = (JsonNumber) postRequest.get("originLon");
+        JsonNumber destinationLatJson = (JsonNumber) postRequest.get("destinationLat");
+        JsonNumber destinationLongJson = (JsonNumber) postRequest.get("destinationLon");
+        double originLat = originLatJson.doubleValue();
+        double originLong = originLongJson.doubleValue();
+        double destinationLat = destinationLatJson.doubleValue();
+        double destinationLong = destinationLongJson.doubleValue();
+
+
+        String route = RequestDirection.postRoute(originLat, originLong, destinationLat, destinationLong);
+        return route;
+    }
+
+
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getIt(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
+    public String get(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
                             @QueryParam("destinationLat") double destinationLat, @QueryParam("destinationLon") double
                         destinationLong) {
-        //String route = RequestDirection.postRoute(originLat, originLong, destinationLat, destinationLong);
         String route = RequestDirection.getRoute(originLat, originLong, destinationLat, destinationLong);
         System.out.println("test"+route);
         return route;
