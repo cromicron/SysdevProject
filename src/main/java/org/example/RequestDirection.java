@@ -16,8 +16,24 @@ import java.io.StringReader;
 public class RequestDirection {
     private static final String OPENROUTESERVICE_URL = "https://api.openrouteservice.org/v2/directions/driving-car";
     private static final String OPENROUTESERVICE_KEY = "5b3ce3597851110001cf6248655d4d1d3e7e4d90a06f096c4723317f";
+    private static final JerseyClient client = new JerseyClientBuilder().build();
 
-    public  static String poiSearch(double originLat, double originLon,double destinationLat, double destinationLon) {
+
+    public static String getRoute(double originLat, double originLon,double destinationLat, double destinationLon){
+        String getURL = OPENROUTESERVICE_URL+ "?api_key="+OPENROUTESERVICE_KEY+"&start="+originLon+","+
+                originLat+"&end="+destinationLon+","+destinationLat;
+        System.out.println(getURL);
+        final Response response = client.target(getURL)
+                .request(MediaType.TEXT_PLAIN_TYPE)
+                .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
+                .get();
+        String responseString = response.readEntity(String.class);
+        return responseString;
+
+
+    }
+
+    public  static String postRoute(double originLat, double originLon,double destinationLat, double destinationLon) {
         // create a json object which we will send in the post request
         // {
         //      format_in: "point",
@@ -41,10 +57,9 @@ public class RequestDirection {
                 .build();
         System.out.println(request);
 
-        final JerseyClient client = new JerseyClientBuilder().build();
-        final JerseyWebTarget webTarget = client.target(OPENROUTESERVICE_URL);
 
-        final Response response = webTarget
+        final JerseyWebTarget webTargetPost = client.target(OPENROUTESERVICE_URL);
+        final Response response = webTargetPost
                 .request(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", OPENROUTESERVICE_KEY) // send the API key for authentication

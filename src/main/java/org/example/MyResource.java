@@ -16,18 +16,17 @@ public class MyResource {
      *
      * @return String that will be returned as a text/plain response.
      */
-    @GET
 
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getIt(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
                             @QueryParam("destinationLat") double destinationLat, @QueryParam("destinationLon") double
                         destinationLong) {
-        String route = RequestDirection.poiSearch(originLat, originLong, destinationLat, destinationLong);
-
+        //String route = RequestDirection.postRoute(originLat, originLong, destinationLat, destinationLong);
+        String route = RequestDirection.getRoute(originLat, originLong, destinationLat, destinationLong);
         System.out.println("test"+route);
         return route;
     }
-
 
 
 
