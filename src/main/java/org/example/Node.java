@@ -12,7 +12,7 @@ public class Node {
         outnodes = outnodesList;
     }
 
-    public String toString(){
-        return "("+Double.toString(lat)+","+Double.toString(lang)+")";
+    public  String toString(){
+        return "["+Double.toString(lat)+","+Double.toString(lang)+"]";
     }
 }

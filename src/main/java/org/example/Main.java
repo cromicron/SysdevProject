@@ -1,6 +1,8 @@
 
 package org.example;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
@@ -14,6 +16,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Main class.
@@ -48,12 +51,19 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         String file = "src/main/java/org/example/schleswig-holstein.json";
-        JsonReader jsonReader = Json.createReader(new FileInputStream(file));
-        JsonObject sh = jsonReader.readObject();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Geojson sh = mapper.readValue(new FileInputStream(file), Geojson.class);
         Graph shGraph = new Graph(sh);
-        ArrayList<Node> arrLst = new ArrayList<Node>();
 
-        System.out.println(shGraph.coordMap.get("9.8385465,54.4798868").outnodes);
+        ArrayList<Node> path = shGraph.getPath(9.8403052,54.4635957, 9.8599366,54.486864, "A*");
+        //create String from array
+        String pathString = path.stream().map(Node::toString).collect(Collectors.joining(","));
+
+        System.out.println(pathString);
+
+
+
 
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with endpoints available at "

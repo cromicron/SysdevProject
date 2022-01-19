@@ -1,5 +1,7 @@
 package org.example;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -12,6 +14,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
 
 import java.io.StringReader;
+import java.util.Map;
 
 public class RequestDirection {
     private static final String OPENROUTESERVICE_URL = "https://api.openrouteservice.org/v2/directions/driving-car";
@@ -33,7 +36,7 @@ public class RequestDirection {
 
     }
 
-    public  static String postRoute(double originLat, double originLon,double destinationLat, double destinationLon) {
+    public  static String postRoute(double originLat, double originLon,double destinationLat, double destinationLon) throws JsonProcessingException {
 
         final JsonObject request = Json.createObjectBuilder()
                 //.add("format_in", "point")
@@ -68,8 +71,6 @@ public class RequestDirection {
 
         // get the JSON response
         final String responseString = response.readEntity(String.class);
-
-
         System.out.println("Response: " + responseString);
 
 
