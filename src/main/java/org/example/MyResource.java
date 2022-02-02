@@ -33,32 +33,10 @@ public class MyResource {
         double originLong = originLongJson.doubleValue();
         double destinationLat = destinationLatJson.doubleValue();
         double destinationLong = destinationLongJson.doubleValue();
-        String route = RequestDirection.postRoute(originLat, originLong, destinationLat, destinationLong);
+        String route = RequestDirection.getRoute(originLat, originLong, destinationLat, destinationLong);
 
 
-        /*The UI does not know what to do with the result from the post request. We have to transform the geojson to be
-        similar to the one from the get request. We need to wrap the segments into properties, and those into features.
-         */
-        ObjectMapper mapper = new ObjectMapper();
-        //Write as file
-
-
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        POJOPost jsonRoute = mapper.readValue(route, POJOPost.class);
-        HashMap<String, ArrayList> segments = new HashMap<String, ArrayList>();
-        HashMap<String, HashMap> properties = new HashMap<String, HashMap>();
-        HashMap<String, ArrayList> features = new HashMap<String, ArrayList>();
-        segments.put("segments", jsonRoute.routes.get(0).segments);
-        properties.put("properties", segments);
-        ArrayList featuresList = new ArrayList<>();
-        featuresList.add(properties);
-        features.put("features", featuresList);
-        String postOutput = mapper.writeValueAsString(features);
-
-        System.out.println(postOutput);
-
-
-        return postOutput;
+        return route;
     }
 
 

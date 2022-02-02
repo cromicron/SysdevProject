@@ -57,10 +57,13 @@ public class Main {
         Graph shGraph = new Graph(sh);
 
         ArrayList<Node> path = shGraph.getPath(9.8403052,54.4635957, 9.8599366,54.486864, "A*");
+        ArrayList<Node>pathUnpreceise = shGraph.anyLocationDijkstra(9.8403052,54.4635957, 9.8599366,54.486864);
         //create String from array
         String pathString = path.stream().map(Node::toString).collect(Collectors.joining(","));
+        String pathStringUnpreceise = pathUnpreceise.stream().map(Node::toString).collect(Collectors.joining(","));
 
         System.out.println(pathString);
+        System.out.println(pathStringUnpreceise);
 
 
 

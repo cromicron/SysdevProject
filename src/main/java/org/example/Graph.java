@@ -77,9 +77,32 @@ public class Graph {
             }
         }
     }
+    public Node nextNode(double lat, double lon){
+        Node nearestNode = nodelist.get(0);
+        for (int i =1; i< nodelist.size(); i++){
+            Node currentNode = nodelist.get(i);
+            double currentDistance = haversineDist(lat,lon,currentNode.lat, currentNode.lang);
+            if (currentDistance < haversineDist(lat, lon, nearestNode.lat,nearestNode.lang)){
+                nearestNode = currentNode;
+            }
+        }
 
-    private static double euclDist(double lat1, double lon1, double lat2, double lon2) {
+        return nearestNode;
+    }
+
+    public static double euclDist(double lat1, double lon1, double lat2, double lon2) {
         return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2));
+    }
+
+    public static double haversineDist(double lat1, double lon1, double lat2, double lon2){
+        final int radius = 6371; //earth radius
+        double distLat = (lat1-lat2)*Math.PI/180;
+        double distLon = (lon1-lon2)*Math.PI/180;
+        double a = Math.sin(distLat/2)*Math.sin(distLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+                Math.sin(distLon/2)*Math.sin(distLon/2);
+        double c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double dist = radius*c;
+        return dist;
     }
     public ArrayList getPath(double originLat, double originLon, double destinationLat,
                              double destinationLon, String algorithm){
@@ -115,8 +138,8 @@ public class Graph {
                     addDistance1 = 0;
                     addDistance2 = 0;
                 }else {
-                    addDistance1 = euclDist(n1.lat, n1.lang, destinationLat,destinationLon);
-                    addDistance2 = euclDist(n2.lat, n2.lang, destinationLat,destinationLon);}
+                    addDistance1 = haversineDist(n1.lat, n1.lang, destinationLat,destinationLon);
+                    addDistance2 = haversineDist(n2.lat, n2.lang, destinationLat,destinationLon);}
                 if ((distances.get(n1) +addDistance1) - (distances.get(n2)+addDistance2) > 0) {
                     return 1;
                 } else if ((distances.get(n1) +addDistance1) - (distances.get(n2)+addDistance2) < 0) {
@@ -145,7 +168,7 @@ public class Graph {
             for (Node neighbor : currentNode.outnodes) {
                 System.out.println("Picking new neighbor " + neighbor);
                 if (finished.get(neighbor) == false) {
-                    double distance = euclDist(currentNode.lat, currentNode.lang, neighbor.lat, neighbor.lang);
+                    double distance = haversineDist(currentNode.lat, currentNode.lang, neighbor.lat, neighbor.lang);
                     System.out.println("distance between current node and neighbor " + distance);
                     if (distances.get(currentNode) + distance < distances.get(neighbor)) {
                         //update distance, if new distance is shorter
@@ -186,7 +209,21 @@ public class Graph {
             return routeList;
         }
 
+        public ArrayList anyLocationDijkstra(double originLat, double originLon, double destinationLat,
+                                             double destinationLon){
+            Node start = nextNode(originLat,originLon);
+            Node end = nextNode(destinationLat,destinationLon);
+            ArrayList route = getPath(start.lat, start.lang, end.lat, end.lang, "Dijkstra");
+            return route;
+        }
 
+        public ArrayList anyLocationAStar(double originLat, double originLon, double destinationLat,
+                                             double destinationLon){
+            Node start = nextNode(originLat,originLon);
+            Node end = nextNode(destinationLat,destinationLon);
+            ArrayList route = getPath(start.lat, start.lang, end.lat, end.lang, "AStar");
+            return route;
+        }
 
 
 
