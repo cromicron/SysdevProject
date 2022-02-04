@@ -17,14 +17,14 @@ public class Graph {
 
         double[][] coordinates = map.features[0].geometry.coordinates;
         for (double[] coord : coordinates) {
-            double lat = coord[0];
-            double lang = coord[1];
+            double lat = coord[1]; //be careful, the schleswig holstein map has longitude first and latitude second
+            double lon = coord[0];
 
             ArrayList<Node> outnodes = new ArrayList<Node>();
-            Node node = new Node(lat, lang, outnodes);
+            Node node = new Node(lat, lon, outnodes);
             nodelist.add(node);
-            String latlang = lat + "," + lang;
-            coordMap.put(latlang, node);
+            String latlon = lat + "," + lon;
+            coordMap.put(latlon, node);
 
         }
 
@@ -38,15 +38,15 @@ public class Graph {
                 //Iterate through LineString
                 for (int j = 0; j < vertices.length - 1; j++) {
                     double[] vertex = vertices[j];
-                    double lat = vertex[0];
-                    double lang = vertex[1];
+                    double lat = vertex[1];
+                    double lon = vertex[0];
 
                     //check if startnode is already in Graph. If not, add it.
-                    String key = lat + "," + lang;
+                    String key = lat + "," + lon;
                     if (!coordMap.containsKey(key)) {
 
                         ArrayList<Node> emptyOutnodes = new ArrayList<Node>();
-                        Node nodeAdd = new Node(lat, lang, emptyOutnodes);
+                        Node nodeAdd = new Node(lat, lon, emptyOutnodes);
                         //add to nodelist
                         nodelist.add(nodeAdd);
                         //add coordinate-string - node  -pair to hashmap
@@ -55,14 +55,14 @@ public class Graph {
                     }
                     //check if outnode is already in the Graph. If not, add it.
                     double[] vertexNext = vertices[j + 1];
-                    double latNext = vertexNext[0];
-                    double langNext = vertexNext[1];
+                    double latNext = vertexNext[1];
+                    double lonNext = vertexNext[0];
 
-                    String keyNext = latNext + "," + langNext;
+                    String keyNext = latNext + "," + lonNext;
                     if (!coordMap.containsKey(keyNext)) {
 
                         ArrayList<Node> emptyOutnodesNext = new ArrayList<Node>();
-                        Node nodeAddNext = new Node(latNext, langNext, emptyOutnodesNext);
+                        Node nodeAddNext = new Node(latNext, lonNext, emptyOutnodesNext);
                         //add to nodelist
                         nodelist.add(nodeAddNext);
                         //add coordinate-string - node  -pair to hashmap
@@ -81,8 +81,8 @@ public class Graph {
         Node nearestNode = nodelist.get(0);
         for (int i =1; i< nodelist.size(); i++){
             Node currentNode = nodelist.get(i);
-            double currentDistance = haversineDist(lat,lon,currentNode.lat, currentNode.lang);
-            if (currentDistance < haversineDist(lat, lon, nearestNode.lat,nearestNode.lang)){
+            double currentDistance = haversineDist(lat,lon,currentNode.lat, currentNode.lon);
+            if (currentDistance < haversineDist(lat, lon, nearestNode.lat,nearestNode.lon)){
                 nearestNode = currentNode;
             }
         }
@@ -90,7 +90,7 @@ public class Graph {
         return nearestNode;
     }
 
-    public static double euclDist(double lat1, double lon1, double lat2, double lon2) {
+    public static double euclidDist(double lat1, double lon1, double lat2, double lon2) {
         return Math.sqrt(Math.pow(lat1 - lat2, 2) + Math.pow(lon1 - lon2, 2));
     }
 
@@ -108,11 +108,11 @@ public class Graph {
                              double destinationLon, String algorithm){
 
         double infinity = 9999999999.9;
-        Node startNode = coordMap.get(Double.toString(originLat) + "," + Double.toString(originLon));
-        Node endNode = coordMap.get(Double.toString(destinationLat) + "," + Double.toString(destinationLon));
-
+        Node startNode = coordMap.get(originLat + "," + originLon);
+        Node endNode = coordMap.get(destinationLat + "," + destinationLon);
+        System.out.println("starting here:" + startNode.lat+","+startNode.lon+ "ending here "+endNode.lat+","+endNode.lon);
         //create Hashmaps
-        HashMap<Node, Double> distances = new HashMap<Node, Double>();
+        HashMap<Node, Double> distances = new HashMap<>();
         HashMap<Node, Node> previous = new HashMap<>();
         HashMap<Node, Boolean> finished = new HashMap();
 
@@ -122,6 +122,7 @@ public class Graph {
                 distances.put(node, 0.0000000);
             } else {
                 distances.put(node, infinity);
+
             }
             previous.put(node, null);
             finished.put(node, false);
@@ -138,8 +139,9 @@ public class Graph {
                     addDistance1 = 0;
                     addDistance2 = 0;
                 }else {
-                    addDistance1 = haversineDist(n1.lat, n1.lang, destinationLat,destinationLon);
-                    addDistance2 = haversineDist(n2.lat, n2.lang, destinationLat,destinationLon);}
+                    addDistance1 = haversineDist(n1.lat, n1.lon, destinationLat,destinationLon);
+                    addDistance2 = haversineDist(n2.lat, n2.lon, destinationLat,destinationLon);
+                }
                 if ((distances.get(n1) +addDistance1) - (distances.get(n2)+addDistance2) > 0) {
                     return 1;
                 } else if ((distances.get(n1) +addDistance1) - (distances.get(n2)+addDistance2) < 0) {
@@ -151,38 +153,40 @@ public class Graph {
         };
 
         PriorityQueue<Node> discoveredQue = new PriorityQueue<>(nodeComparator);
-        ArrayList<Node> discovered = new ArrayList<>();
-        discovered.add(startNode);
+        discoveredQue.add(startNode);
 
         while (finished.get(endNode) == false) {
-            discovered.sort(nodeComparator);
-            for (Node vertix : discovered){
+
+            for (Node vertix : discoveredQue){
                 System.out.println("distance "+ distances.get(vertix));
+                System.out.println("total distance "+ (distances.get(vertix)+haversineDist(vertix.lat,vertix.lon,destinationLat,destinationLon)));
             }
-            System.out.println();
-            discovered.sort(nodeComparator);
-            Node currentNode = discovered.get(0);
-            discovered.remove(0);
+
+
+            Node currentNode = discoveredQue.remove();
+
             System.out.println("currentNode " + currentNode);
             System.out.println("number of neighbor: "+currentNode.outnodes.size());
             for (Node neighbor : currentNode.outnodes) {
                 System.out.println("Picking new neighbor " + neighbor);
                 if (finished.get(neighbor) == false) {
-                    double distance = haversineDist(currentNode.lat, currentNode.lang, neighbor.lat, neighbor.lang);
+                    double distance = haversineDist(currentNode.lat, currentNode.lon, neighbor.lat, neighbor.lon);
                     System.out.println("distance between current node and neighbor " + distance);
                     if (distances.get(currentNode) + distance < distances.get(neighbor)) {
                         //update distance, if new distance is shorter
                         System.out.println("Updating distance of neighbor");
                         System.out.println("Old distance " + distances.get(neighbor));
                         distances.put(neighbor, distances.get(currentNode) + distance);
+                        //put node again into queue so the updated distance will be relevant for the order
+                        discoveredQue.add(neighbor);
                         //update previous
                         System.out.println("New distance " + distances.get(neighbor));
                         System.out.println("Updating route. Current previous node " + previous.get(neighbor));
                         previous.put(neighbor, currentNode);
                         System.out.println("Updating route. New previous node " + previous.get(neighbor));
                     }
-                    if (!discovered.contains(neighbor)) {
-                        discovered.add(neighbor);
+                    if (!discoveredQue.contains(neighbor)) {//add discovered node to que if it's not part of it yet.
+                        discoveredQue.add(neighbor);
                         System.out.println("adding neighbor to the queue");
                     }
                 } else {
@@ -213,7 +217,7 @@ public class Graph {
                                              double destinationLon){
             Node start = nextNode(originLat,originLon);
             Node end = nextNode(destinationLat,destinationLon);
-            ArrayList route = getPath(start.lat, start.lang, end.lat, end.lang, "Dijkstra");
+            ArrayList route = getPath(start.lat, start.lon, end.lat, end.lon, "Dijkstra");
             return route;
         }
 
@@ -221,7 +225,7 @@ public class Graph {
                                              double destinationLon){
             Node start = nextNode(originLat,originLon);
             Node end = nextNode(destinationLat,destinationLon);
-            ArrayList route = getPath(start.lat, start.lang, end.lat, end.lang, "AStar");
+            ArrayList route = getPath(start.lat, start.lon, end.lat, end.lon, "AStar");
             return route;
         }
 

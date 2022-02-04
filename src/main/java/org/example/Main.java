@@ -3,17 +3,12 @@ package org.example;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonReader;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -55,15 +50,17 @@ public class Main {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Geojson sh = mapper.readValue(new FileInputStream(file), Geojson.class);
         Graph shGraph = new Graph(sh);
-
-        ArrayList<Node> path = shGraph.getPath(9.8403052,54.4635957, 9.8599366,54.486864, "A*");
-        ArrayList<Node>pathUnpreceise = shGraph.anyLocationDijkstra(9.8403052,54.4635957, 9.8599366,54.486864);
+        for (Node node: shGraph.nodelist){
+            System.out.println(node.outnodes);
+        }
+        ArrayList<Node>pathDijkstra = shGraph.anyLocationDijkstra(54.4635957,9.8403052, 54.486864,9.8599366);
+        //ArrayList<Node>pathAStar = shGraph.anyLocationAStar(9.8403052,54.4635957, 9.8599366,54.486864);
         //create String from array
-        String pathString = path.stream().map(Node::toString).collect(Collectors.joining(","));
-        String pathStringUnpreceise = pathUnpreceise.stream().map(Node::toString).collect(Collectors.joining(","));
-
-        System.out.println(pathString);
-        System.out.println(pathStringUnpreceise);
+        String pathDijk = pathDijkstra.stream().map(Node::toString).collect(Collectors.joining(","));
+        //String pathA = pathAStar.stream().map(Node::toString).collect(Collectors.joining(","));
+        String jsonString = Geojson.transformToString(pathDijkstra);
+        System.out.println(pathDijk);
+        System.out.println("json"+jsonString);
 
 
 
