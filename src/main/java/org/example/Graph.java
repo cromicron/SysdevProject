@@ -104,13 +104,13 @@ public class Graph {
         double dist = radius*c;
         return dist;
     }
-    public ArrayList getPath(double originLat, double originLon, double destinationLat,
+    public ArrayList<Node> getPath(double originLat, double originLon, double destinationLat,
                              double destinationLon, String algorithm){
 
         double infinity = 9999999999.9;
         Node startNode = coordMap.get(originLat + "," + originLon);
         Node endNode = coordMap.get(destinationLat + "," + destinationLon);
-        System.out.println("starting here:" + startNode.lat+","+startNode.lon+ "ending here "+endNode.lat+","+endNode.lon);
+
         //create Hashmaps
         HashMap<Node, Double> distances = new HashMap<>();
         HashMap<Node, Node> previous = new HashMap<>();
@@ -157,47 +157,33 @@ public class Graph {
 
         while (finished.get(endNode) == false) {
 
-            for (Node vertix : discoveredQue){
-                System.out.println("distance "+ distances.get(vertix));
-                System.out.println("total distance "+ (distances.get(vertix)+haversineDist(vertix.lat,vertix.lon,destinationLat,destinationLon)));
-            }
-
-
             Node currentNode = discoveredQue.remove();
 
-            System.out.println("currentNode " + currentNode);
-            System.out.println("number of neighbor: "+currentNode.outnodes.size());
             for (Node neighbor : currentNode.outnodes) {
-                System.out.println("Picking new neighbor " + neighbor);
+
                 if (finished.get(neighbor) == false) {
                     double distance = haversineDist(currentNode.lat, currentNode.lon, neighbor.lat, neighbor.lon);
-                    System.out.println("distance between current node and neighbor " + distance);
+
                     if (distances.get(currentNode) + distance < distances.get(neighbor)) {
                         //update distance, if new distance is shorter
-                        System.out.println("Updating distance of neighbor");
-                        System.out.println("Old distance " + distances.get(neighbor));
+
                         distances.put(neighbor, distances.get(currentNode) + distance);
                         //put node again into queue so the updated distance will be relevant for the order
                         discoveredQue.add(neighbor);
                         //update previous
-                        System.out.println("New distance " + distances.get(neighbor));
-                        System.out.println("Updating route. Current previous node " + previous.get(neighbor));
+
                         previous.put(neighbor, currentNode);
-                        System.out.println("Updating route. New previous node " + previous.get(neighbor));
+
                     }
                     if (!discoveredQue.contains(neighbor)) {//add discovered node to que if it's not part of it yet.
                         discoveredQue.add(neighbor);
-                        System.out.println("adding neighbor to the queue");
+
                     }
-                } else {
-                    System.out.println("neighbor already has shortest path");
                 }
 
-
             }
-            System.out.println("Updating finished nodes from " + finished.get(currentNode));
+
             finished.put(currentNode, true);
-            System.out.println("Updating finished nodes to " + finished.get(currentNode));
             }
             //create route list to return path.
             ArrayList<Node> routeList = new ArrayList<>();

@@ -32,7 +32,7 @@ public class Geojson {
         pathJson.features = featuresJson;
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); //Nested Geojsons only included subset of fileds
         String pathString = mapper.writeValueAsString(pathJson);
         return pathString;
     }

@@ -6,7 +6,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 
 @Path("/dijkstra")
 public class DijkstraRessource {
@@ -15,8 +16,24 @@ public class DijkstraRessource {
     public String get(@QueryParam("originLat") double originLat, @QueryParam("originLon") double originLong,
                       @QueryParam("destinationLat") double destinationLat, @QueryParam("destinationLon") double
                               destinationLong) throws IOException {
-        String route = RequestDirection.getDijkstra(originLat, originLong, destinationLat, destinationLong);
+        String path = new String();
+        try (Socket socket = new Socket("localhost", 1234)) {
+            OutputStream os = socket.getOutputStream();
+            InputStream is = socket.getInputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+            ObjectInputStream ois = new ObjectInputStream(is);
 
-        return route;
+            double[] requestArray = {originLat, originLong, destinationLat, destinationLong, 0};
+            oos.writeObject(requestArray);
+            path = (String) ois.readObject();
+
+
+            os.close();
+            is.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return path;
     }
 }
