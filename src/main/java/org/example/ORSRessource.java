@@ -35,7 +35,7 @@ public class ORSRessource {
                             @QueryParam("destinationLat") double destinationLat, @QueryParam("destinationLon") double
                         destinationLong) {
         String route = RequestDirection.getRoute(originLat, originLong, destinationLat, destinationLong);
-        System.out.println("test"+route);
+
         return route;
     }
 

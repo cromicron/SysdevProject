@@ -24,7 +24,7 @@ public class Main {
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     }
 
-    static final Server routingServer = new Server();
+   static final Server routingServer = new Server();
 
 
     public static void main(String[] args) throws IOException {

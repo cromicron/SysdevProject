@@ -25,7 +25,7 @@ public class RequestDirection {
     public static String getRoute(double originLat, double originLon,double destinationLat, double destinationLon){
         String getURL = OPENROUTESERVICE_URL+ "?api_key="+OPENROUTESERVICE_KEY+"&start="+originLon+","+
                 originLat+"&end="+destinationLon+","+destinationLat;
-        System.out.println(getURL);
+
         final Response response = client.target(getURL)
                 .request(MediaType.TEXT_PLAIN_TYPE)
                 .header("Accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8")
@@ -80,7 +80,6 @@ public class RequestDirection {
                                 .build()
                 )
                 .build();
-        System.out.println(request);
 
 
         final JerseyWebTarget webTargetPost = client.target(OPENROUTESERVICE_URL);
@@ -97,7 +96,7 @@ public class RequestDirection {
 
         // get the JSON response
         final String responseString = response.readEntity(String.class);
-        System.out.println("Response: " + responseString);
+
 
 
         return  responseString;
